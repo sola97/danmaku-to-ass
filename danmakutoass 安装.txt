@@ -1,0 +1,48 @@
+﻿#---------------------ubuntu 安装 nodejs--------------https://github.com/nodesource/distributions#manual-installation
+curl -sL https://deb.nodesource.com/setup_4.x | sudo -E bash -
+sudo apt-get install -y nodejs
+#---------------------安装 canvas 依赖-----------------------
+sudo apt install libcairo2-dev libjpeg8-dev libpango1.0-dev libgif-dev build-essential g++
+#---------------------安装 canvas----------------------------
+sudo apt install npm && npm install canvas
+sudo npm install -g danmaku-to-ass
+#---------------------字体样式-------------------------------
+#!/bin/bash
+mkdir ~/toass
+echo '{
+    "fontSize": [25, 25],y
+    "fontName": "黑体",
+    "color": "#ffffff",
+    "outlineColor": "#3c3c3c",
+    "backColor": "#1e1e1e",
+    "outline": 0,
+    "shadow": 1,
+    "bold": true,
+    "padding": [2, 2, 2, 2],
+    "playResX": 1920,
+    "playResY": 1080,
+    "scrollTime": 10,
+    "fixTime": 4,
+    "opacity": 0.93,
+    "bottomSpace": 60,
+    "includeRaw": true
+}' > ~/toass/danmaku.config
+#-----------------------批量转换Alias------------------------------
+echo '#!/bin/bash
+DIR="$( cd "$( dirname "$0"  )" && pwd  )"
+for i in "$@"
+do
+rootpath=$(cd "$(dirname "$i")"; pwd)
+danmaku --config $DIR/danmaku.config --out-dir $rootpath/ --block-file $DIR/toass_re.xml  "$i"
+#echo "danmaku --config $DIR/danmaku.config --out-dir $rootpath/ --block-file $DIR/toass_re.xml  "$i""
+done
+echo "转换列表:"
+for i in "$@"
+do
+echo "$i"
+done
+echo "转换完成 共$#个"' > ~/toass/toass.sh
+chmod +x ~/toass/toass.sh
+echo "添加alias" && echo 'alias toass="~/toass/toass.sh"' >> ~/.bashrc && echo "成功"
+source ~/.bashrc
+#--------------------------------------------------------------------
